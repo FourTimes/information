@@ -1,0 +1,28 @@
+# vim /etc/logrotate.d/audit
+
+
+/var/log/eprise/* {
+    rotate 45
+    hourly # daily
+    # su root root # For ubuntu machines (First manually run if any error after that enable it)
+    maxfile 15M
+    missingok
+    notifempty
+    create 0755 root root
+    dateext
+    dateformat -%d%m%Y%s
+    compress
+
+    prerotate
+        service auditd stop > /dev/null; sleep 3
+    endscript
+
+    postrotate
+        service auditd start  2>/dev/null
+    endscript
+}
+
+
+# Cronjob for it depends on your environment
+*/5 * * * * root logrotate /etc/logrotate.d/audit
+
